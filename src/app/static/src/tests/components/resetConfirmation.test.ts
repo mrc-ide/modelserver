@@ -1,4 +1,4 @@
-import Vue from "vue";
+import Vue, { WatchHandler, WatchOptions } from "vue";
 import {mount, shallowMount, Wrapper} from "@vue/test-utils";
 import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
@@ -169,6 +169,38 @@ describe("Reset confirmation modal", () => {
         expect(mockContinueEdit.mock.calls.length).toBe(0);
         expect((rendered.vm as any).waitingForVersion).toBe(true);
         expect(mockNewVersion.mock.calls.length).toBe(1);
+    });
+
+    it("pressing enter sets waitingForVersion to true and invokes newVersion action for logged in user", async (done) => {
+
+        const mockContinueEdit = jest.fn();
+        const mockNewVersion = jest.fn();
+        const rendered = mount(ResetConfirmation, {
+            attachToDocument: true, // this is deprecated but typescript doesn't recognise attachTo as a type on mount
+            propsData: {
+                open: false,
+                continueEditing: mockContinueEdit,
+                cancelEditing: jest.fn()
+            },
+            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+        });
+        rendered.setProps({
+            open: true,
+            continueEditing: mockContinueEdit,
+            cancelEditing: jest.fn()
+        })
+        setTimeout(() => {
+            const okBtn = rendered.findAll("button").at(0)
+            expect(okBtn.element).toBe(document.activeElement);
+            // okBtn.trigger("keyup.enter"); // ideally we'd trigger an enter press here but this doesn't do anything in vue tests; however,...
+            okBtn.trigger("click"); // in the browser, pressing enter on an active element seems to produce the same behaviour as clicking it
+            setTimeout(() => {
+                expect(mockContinueEdit.mock.calls.length).toBe(0);
+                expect((rendered.vm as any).waitingForVersion).toBe(true);
+                expect(mockNewVersion.mock.calls.length).toBe(1);
+                done();
+            })
+        })
     });
 
     it("when currentVersion changes, sets waitingForVersion to false and invokes continue editing, if waitingForVersion is true", async () => {

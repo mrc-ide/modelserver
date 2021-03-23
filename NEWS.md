@@ -1,3 +1,7 @@
+# hint 1.25.0
+
+* Creates consistency on how the enter button works
+
 # hint 1.24.0
 
 * Make login email case insensitive

@@ -13,6 +13,7 @@ module.exports = {
         "plugin:vue/essential"
     ],
     rules: {
+        "consistent-this": ["self"],
         "no-prototype-builtins": "off",
         // this is just a rule to enforce nesting script tags in vue templates
         // unfortunately it doesn't understand typescript AST so won't enforce any other

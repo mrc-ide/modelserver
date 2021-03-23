@@ -128,6 +128,7 @@
                 <button
                     type="button"
                     class="btn btn-red"
+                    ref="okDeleteBtn"
                     @click="confirmDelete"
                     v-translate="'ok'"></button>
                 <button
@@ -222,6 +223,7 @@
         versionCountLabel: (project: Project) => string;
         deleteProject: (event: Event, projectId: number) => void;
         deleteVersion: (event: Event, projectId: number, versionId: string) => void;
+        toggleButtonFocus: (id: null | number | VersionIds) => void;
         promoteVersion: (
             event: Event,
             projectId: number,
@@ -276,6 +278,16 @@
             )
         },
         methods: {
+            toggleButtonFocus(id: null | number | VersionIds){
+                const okDeleteBtn = this.$refs.okDeleteBtn as HTMLElement
+                if (okDeleteBtn){
+                    this.$nextTick(() => {
+                        if (id){
+                            okDeleteBtn.focus();
+                        } else okDeleteBtn.blur();
+                    })
+                }
+            },
             format(date: string) {
                 return formatDateTime(date);
             },
@@ -390,6 +402,14 @@
                 return i18next.t(key, {
                     lng: this.currentLanguage,
                 });
+            }
+        },
+        watch: {
+            projectToDelete: function (){
+                this.toggleButtonFocus(this.projectToDelete)
+            },
+            versionToDelete: function (){
+                this.toggleButtonFocus(this.versionToDelete)
             }
         },
         components: {

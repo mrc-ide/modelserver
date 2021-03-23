@@ -63,8 +63,8 @@ describe("Project history component", () => {
     ];
 
 
-    const getWrapper = (projects = testProjects) =>  {
-        return mount(ProjectHistory, {store: createStore(projects), stubs: ["share-project"]});
+    const getWrapper = (projects = testProjects, attachToDocument = false) =>  {
+        return mount(ProjectHistory, {store: createStore(projects), stubs: ["share-project"], attachToDocument: attachToDocument});
     };
 
     it("renders icons without an error", async () => {
@@ -258,6 +258,16 @@ describe("Project history component", () => {
         expect(mockDeleteProject.mock.calls[0][1]).toBe(1);
     });
 
+    it("OK button is automatically selected when delete project link pressed", async () => {
+        const wrapper = getWrapper(testProjects, true);
+        const deleteLink = wrapper.find("#p-1").find(".project-cell.delete-cell").find("button");
+        deleteLink.trigger("click");
+        await Vue.nextTick();
+
+        const okButton = wrapper.find(".modal").findAll("button").at(0);
+        expect(okButton.element).toBe(document.activeElement);
+    });
+
     it("invokes deleteVersion action when confirm delete", async () => {
         const wrapper = getWrapper(testProjects);
         const deleteLink = wrapper.find("#v-s11").find(".version-cell.delete-cell").find("button");
@@ -270,6 +280,16 @@ describe("Project history component", () => {
 
         expect(mockDeleteVersion.mock.calls.length).toBe(1);
         expect(mockDeleteVersion.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
+    });
+
+    it("OK button is automatically selected when delete version link pressed", async () => {
+        const wrapper = getWrapper(testProjects, true);
+        const deleteLink = wrapper.find("#v-s11").find(".version-cell.delete-cell").find("button");
+        deleteLink.trigger("click");
+        await Vue.nextTick();
+
+        const okButton = wrapper.find(".modal").findAll("button").at(0);
+        expect(okButton.element).toBe(document.activeElement);
     });
 
     it("hides delete modal and does not invoke action when click cancel", async () => {

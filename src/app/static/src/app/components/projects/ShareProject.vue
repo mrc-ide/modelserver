@@ -9,10 +9,10 @@
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!cloningProject">
                 <div v-html="instructions" id="instructions"></div>
-                <div class="row mb-2" v-for="(email, index) in emailsToShareWith" :key="index">
+                <div class="row mb-2" v-for="(email, index) in emailsToShareWith" :key="index" id="shareInputs">
                     <div class="col">
                         <input autocomplete="no"
-                               @keyup.enter="$event.target.blur()"
+                               @keyup.enter="enterEmails(email, index)"
                                @keyup.delete="removeEmail(email, index)"
                                class="form-control"
                                :class="{'is-invalid': email.valid === false}"
@@ -39,6 +39,7 @@
                 <error-alert v-if="cloneProjectError" :error="cloneProjectError"></error-alert>
                 <button type="button"
                         class="btn btn-red"
+                        ref="okBtn"
                         @click="confirmShareProject"
                         :disabled="invalidEmails || cloningProject"
                         v-translate="'ok'">
@@ -94,6 +95,8 @@
 
     interface Methods {
         addEmail: (email: EmailToShareWith, index: number) => void
+        enterEmails: (email: EmailToShareWith, index: number) => void
+        cycleInputs: (email: EmailToShareWith, index: number) => void
         removeEmail: (email: EmailToShareWith, index: number) => void
         shareProject: (e: Event) => void
         confirmShareProject: () => void
@@ -119,6 +122,12 @@
         methods: {
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
+            enterEmails(email: EmailToShareWith, index: number){
+                this.addEmail(email, index)
+                this.$nextTick(() => {   
+                    this.cycleInputs(email, index)               
+                })
+            },
             addEmail(e: EmailToShareWith, index: number) {
                 if (e.value && index == this.emailsToShareWith.length - 1) {
                     this.emailsToShareWith.push({
@@ -149,6 +158,20 @@
                         email.valid = null;
                     }
                 });
+            },
+            cycleInputs(email, index){
+                    const lastInputIndex = this.emailsToShareWith.length - 1
+                    const lastInput = this.$el.querySelectorAll("#shareInputs > div > input")[lastInputIndex]! as HTMLElement
+                    const currentInput = this.$el.querySelectorAll("#shareInputs > div > input")[index]! as HTMLElement
+                    const okBtn = this.$refs.okBtn as HTMLElement
+
+                if (index === lastInputIndex && !email.value){
+                    currentInput.blur()
+                    okBtn.focus()
+                } else {
+                    currentInput.blur()
+                    lastInput.focus()
+                }
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
@@ -205,6 +228,17 @@
             tooltip: VTooltip
         },
         watch: {
+            open: function(){
+                const firstInput = this.$el.querySelectorAll("#shareInputs > div > input")[0]! as HTMLElement
+                const self = this
+                if (firstInput){
+                    this.$nextTick(() => {
+                        if (self.open){
+                            firstInput.focus();
+                        }
+                    })
+                }
+            },
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {
                     this.emailsToShareWith = [{value: "", valid: null, validationMessage: ""}];

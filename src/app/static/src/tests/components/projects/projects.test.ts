@@ -84,11 +84,37 @@ describe("Projects component", () => {
         expect(wrapper.findAll(".invalid-feedback").length).toBe(0);
     });
 
+    it("enables create project via enter press on input when project name is entered", () => {
+        const mockCreateProject = jest.fn();
+        const wrapper = createSut({}, mockCreateProject);
+        const input = wrapper.find("input")
+
+        input.trigger("keyup.enter");
+        expect(mockCreateProject.mock.calls.length).toBe(0);
+
+        input.setValue("newProject");
+        input.trigger("keyup.enter");
+        expect(mockCreateProject.mock.calls.length).toBe(1);
+        expect(mockCreateProject.mock.calls[0][1]).toBe("newProject");
+    });
+
     it("shows invalid feedback if name is non unique", () => {
         const wrapper = createSut({previousProjects: [{name: "p1", id: 123, versions: []}]});
         wrapper.find("input").setValue("p1");
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
         expect(wrapper.findAll(".invalid-feedback").length).toBe(1);
+    });
+
+    it("prevents createProject when pressing enter in input if name is non unique", () => {
+        const mockCreateProject = jest.fn();
+        const wrapper = createSut(
+            {previousProjects: [{name: "p1", id: 123, versions: []}]}, 
+            mockCreateProject
+            );
+        const input = wrapper.find("input")
+        input.setValue("p1");
+        input.trigger("keyup.enter");
+        expect(mockCreateProject.mock.calls.length).toBe(0);
     });
 
     it("displays error if any", () => {

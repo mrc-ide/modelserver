@@ -12,6 +12,7 @@
             </div>
             <div class="my-3 col-6 clearfix">
                 <input type="text" class="form-control"
+                       @keyup.enter="!disableCreate && createProject(newProjectName)"
                        v-translate:placeholder="'projectName'"
                        v-model="newProjectName">
                 <div class="invalid-feedback d-inline"

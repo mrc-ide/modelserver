@@ -17,6 +17,7 @@
             <template v-if="!waitingForVersion" v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
+                        ref="confirmBtn"
                         @click="handleConfirm"
                         v-translate="isGuest? 'discardSteps' : 'saveVersionConfirm'">
                 </button>
@@ -100,6 +101,17 @@
                 if (this.waitingForVersion && (newVal > oldVal)) {
                     this.waitingForVersion = false;
                     this.cancelEditing();
+                }
+            },
+            open: function(){
+                const confirmBtn = this.$refs.confirmBtn as HTMLElement
+                const self = this
+                if (confirmBtn){
+                    this.$nextTick(() => {
+                        if (self.open){
+                            confirmBtn.focus();
+                        } else confirmBtn.blur();
+                    })
                 }
             }
         },
