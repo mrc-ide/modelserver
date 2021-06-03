@@ -13,6 +13,7 @@
             <div class="my-3 col-6 clearfix">
                 <input type="text" class="form-control"
                        v-translate:placeholder="'projectName'"
+                       @keyup.enter="createProject(newProjectName)"
                        v-model="newProjectName">
                 <div class="invalid-feedback d-inline"
                      v-translate="'uniqueProjectName'"

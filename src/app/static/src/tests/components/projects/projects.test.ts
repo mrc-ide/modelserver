@@ -84,6 +84,19 @@ describe("Projects component", () => {
         expect(wrapper.findAll(".invalid-feedback").length).toBe(0);
     });
 
+    it("can create a new project when enter key is pressed", () => {
+        const mockCreateProject = jest.fn();
+        const wrapper = createSut({}, mockCreateProject);
+        const input = wrapper.find("input")
+
+        input.setValue("newProject with enter key");
+        expect(wrapper.find("button").attributes("disabled")).toBeUndefined();
+        input.trigger("keyup.enter")
+
+        expect(mockCreateProject.mock.calls.length).toBe(1);
+        expect(mockCreateProject.mock.calls[0][1]).toBe("newProject with enter key");
+    });
+
     it("shows invalid feedback if name is non unique", () => {
         const wrapper = createSut({previousProjects: [{name: "p1", id: 123, versions: []}]});
         wrapper.find("input").setValue("p1");
