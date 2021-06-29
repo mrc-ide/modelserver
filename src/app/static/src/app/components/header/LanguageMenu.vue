@@ -6,6 +6,9 @@
         <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('fr')">
             FR
         </a>
+        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('pt')">
+            PT
+        </a>
     </drop-down>
 </template>
 <script lang="ts">

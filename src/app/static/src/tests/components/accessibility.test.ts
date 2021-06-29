@@ -56,10 +56,10 @@ describe(`accessibility`, () =>{
             .find("h1").text()).toBe("Accessibilité sur Naomi")
 
         const h2 = rendered.find("#accessibility-content").findAll("h2")
-        expect(h2.at(0).text()).toBe("Dans quelle mesure le site Web est-il accessible")
-        expect(h2.at(1).text()).toBe("Ce que nous faisons face aux problèmes connus")
+        expect(h2.at(0).text()).toBe("Accessibilité du site Web")
+        expect(h2.at(1).text()).toBe("Traitement des problèmes connus")
         expect(h2.at(2).text()).toBe("Informations techniques sur l'accessibilité de ce site Web")
-        expect(h2.at(3).text()).toBe("Signaler des problèmes d'accessibilité")
+        expect(h2.at(3).text()).toBe("Signalement des problèmes d’accessibilité")
         expect(h2.at(4).text()).toBe("Procédure d'exécution")
         expect(h2.at(5).text()).toBe("Comment nous testons ce site Web")
         expect(h2.at(6).text()).toBe("Dernière mise à jour")
@@ -76,8 +76,8 @@ describe(`accessibility`, () =>{
         const li = rendered.find("#accessibility-content").find("#purpose").findAll("ul li")
         expect(li.length).toBe(3)
         expect(li.at(0).text()).toBe("Redimensionner votre fenêtre avec le contenu reformaté de manière appropriée")
-        expect(li.at(1).text()).toBe("Ajustez la taille de votre texte sans que le site ne devienne moins utilisable")
-        expect(li.at(2).text()).toBe("Lisez facilement le texte grâce au contraste suffisant entre les éléments de premier plan et d'arrière-plan")
+        expect(li.at(1).text()).toBe("Ajuster la taille de votre texte sans pour autant que le site ne devienne moins utilisable")
+        expect(li.at(2).text()).toBe("Lire facilement le texte grâce à un contraste suffisant entre les éléments de premier plan et les éléments d’arrière-plan")
     })
 
     it(`renders accessibility example list tags as expected in French`, () => {
@@ -86,12 +86,12 @@ describe(`accessibility`, () =>{
 
         const li = rendered.find("#accessibility-content").find("#example").findAll("ul li")
         expect(li.length).toBe(6)
-        expect(li.at(0).text()).toBe("Il peut ne pas être entièrement navigable au clavier")
-        expect(li.at(1).text()).toBe("Certains graphiques et tableaux peuvent ne pas être correctement interprétés par les lecteurs d'écran")
-        expect(li.at(2).text()).toBe("Certains éléments de formulaire peuvent manquer de noms ou d'étiquettes descriptives")
-        expect(li.at(3).text()).toBe("Certains phrases peuvent ne pas avoir été correctement traduites")
-        expect(li.at(4).text()).toBe("Certains éléments de formulaire peuvent manquer de contrastes de couleurs suffisants")
-        expect(li.at(5).text()).toBe("Certains pages peuvent ne pas avoir la possibilité de sauter la navigation et d'accéder au contenu")
+        expect(li.at(0).text()).toBe("Il se peut qu’il ne soit pas entièrement navigable par le clavier")
+        expect(li.at(1).text()).toBe("Certains graphiques et tableaux peuvent ne pas être interprétés correctement par les lecteurs d’écran")
+        expect(li.at(2).text()).toBe("Certains éléments de formulaire peuvent ne pas comporter de noms ou d’étiquettes de description")
+        expect(li.at(3).text()).toBe("Certaines phrases peuvent ne pas avoir été traduites correctement")
+        expect(li.at(4).text()).toBe("Le contraste de couleurs peut ne pas s’avérer suffisant pour certains éléments de formulaire")
+        expect(li.at(5).text()).toBe("Certaines pages peuvent ne pas offrir la possibilité d’ignorer la navigation et d’accéder directement au contenu")
     })
 
     it(`renders accessibility purpose list tags as expected in English`, () => {

@@ -74,7 +74,7 @@ describe("Project history component", () => {
         expect(wrapper.find("refresh-cw-icon").exists).toBeTruthy();
         expect(wrapper.find("edit-icon").exists).toBeTruthy();
     });
-    
+
     it("can render tooltips without an error", () => {
         const mockTooltip = jest.fn();
         const store = createStore(testProjects)
@@ -158,7 +158,7 @@ describe("Project history component", () => {
         expectTranslated(headers.at(6), "Delete", "Supprimer", store);
         expectTranslated(headers.at(7), "Copy to", "Copier", store);
         expectTranslated(headers.at(8), "Share", "Partager", store);
-        
+
         testRendersProject(wrapper, 1, "proj1",  isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
         const proj1VersionRows = proj1Versions.findAll(".row");
@@ -173,7 +173,7 @@ describe("Project history component", () => {
         testRendersVersion(proj2VersionRows.at(0), "s21", isoDates[3], 1, store);
 
         const modal = wrapper.find(".modal");
-        expect(modal.classes).not.toContain("show");         
+        expect(modal.classes).not.toContain("show");
     });
 
     it("can expand project row", async (done) => {
@@ -285,7 +285,7 @@ describe("Project history component", () => {
         expect(mockDeleteVersion.mock.calls.length).toBe(0);
         const modal = wrapper.find(".modal");
         expect(modal.classes).not.toContain("show");
-    }); 
+    });
 
     const testLoadVersionLink = async function (elementId: string, projectId: number, versionId: string) {
         const wrapper = getWrapper(testProjects);
@@ -358,7 +358,7 @@ describe("Project history component", () => {
         const mockEvent = { preventDefault: mockPreventDefault }
         wrapper.setData({ projectToRename: null })
         const vm = wrapper.vm as any
-        
+
         vm.renameProject(mockEvent, 123);
         expect(vm.projectToRename).toBe(123);
         expect(mockPreventDefault.mock.calls.length).toStrictEqual(1);
@@ -630,7 +630,7 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(1);
         const textarea = modal.find("#promoteNote label");
         expectTranslated(textarea, "Notes: (your reason for copying project)",
-            "Remarques : (la raison de la copie du projet)" , store)
+            "Notes : (votre motif pour copier le projet)" , store)
     });
 
 });

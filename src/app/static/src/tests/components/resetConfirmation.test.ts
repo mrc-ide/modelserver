@@ -166,7 +166,7 @@ describe("Reset confirmation modal", () => {
         const store = rendered.vm.$store
         const noteLabel = rendered.find("#noteHeader label")
         expectTranslated(noteLabel, "Notes: (your reason for saving as a new version)",
-            "Remarques: (la raison pour laquelle vous enregistrez en tant que nouvelle version)", store)
+            "Notes : (votre motif pour sauvegarder en tant que nouvelle version)", store)
     });
 
     it("can set and get note value", async () => {

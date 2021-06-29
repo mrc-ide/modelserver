@@ -130,7 +130,7 @@ describe("adr integration", () => {
         const spans = (renders.find("#adr-capacity").findAll("span"))
 
         expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", store)
-        expectTranslated(spans.at(1), "Read & Write", "Lire et écrire", store)
+        expectTranslated(spans.at(1), "Read & Write", "Lecture et écriture", store)
         expect(mockTooltip.mock.calls[0][1].value).toBe("You have read and write permissions for this dataset and may push output files to ADR");
     });
 
@@ -147,7 +147,7 @@ describe("adr integration", () => {
         const spans = (renders.find("#adr-capacity").findAll("span"))
 
         expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", store)
-        expectTranslated(spans.at(1), "Read only", "Lecture seulement", store)
+        expectTranslated(spans.at(1), "Read only", "Lecture seule", store)
         expect(mockTooltip.mock.calls[0][1].value).toBe("You do not currently have write permissions for this dataset and will be unable to upload files to ADR");
     });
 
@@ -160,7 +160,7 @@ describe("adr integration", () => {
                 store,
                 directives: {"tooltip": mockTooltip}
             })
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous disposez des autorisations de lecture et d'écriture pour cet ensemble de données et pouvez envoyer les fichiers de sortie vers ADR");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous bénéficiez des droits de lecture et d’écriture pour cet ensemble de données et vous pouvez envoyer les fichiers de sortie vers le ADR");
     });
 
     it("renders Tooltip text for readers as expected in French", () => {
@@ -172,7 +172,7 @@ describe("adr integration", () => {
                 store,
                 directives: {"tooltip": mockTooltip}
             })
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous ne disposez actuellement pas des autorisations d'écriture pour cet ensemble de données et ne pourrez pas télécharger de fichiers vers ADR");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous ne disposez actuellement d’aucun droit d’écriture pour cet ensemble de données et vous ne pourrez pas télécharger de fichiers vers le ADR");
     });
 
     it("call getUserCanUpload action if key is provided", async() => {

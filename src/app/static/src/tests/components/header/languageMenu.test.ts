@@ -40,6 +40,14 @@ describe("Language menu", () => {
             expect(wrapper.find(DropDown).props("text")).toBe("FR");
             done();
         })
+
+        wrapper.findAll(".dropdown-item").at(2).trigger("mousedown");
+
+        setTimeout(() => {
+            expect(store.state.language).toBe(Language.pt);
+            expect(wrapper.find(DropDown).props("text")).toBe("PT");
+            done();
+        })
     });
 
 
