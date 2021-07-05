@@ -39,4 +39,17 @@ class MetadataControllerTests
         val result = sut.version()
         assertThat(result).isSameAs(mockResponse)
     }
+
+    @Test
+    fun `can get uploadToADR metadata`()
+    {
+        val mockResponse = mock<ResponseEntity<String>>()
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { getUploadMetadata("id1") } doReturn mockResponse
+        }
+
+        val sut = MetadataController(mockAPIClient)
+        val result = sut.uploadMetadata("id1")
+        assertThat(result).isSameAs(mockResponse)
+    }
 }

@@ -9,24 +9,25 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 @RequestMapping("/download")
 class DownloadController(val apiClient: HintrAPIClient)
 {
-    @GetMapping("/spectrum/{id}")
+    @GetMapping("/submit/{type}/{id}")
     @ResponseBody
-    fun getSpectrum(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
+    fun getDownloadOutput(@PathVariable("type") type: String,
+                  @PathVariable("id") id: String): ResponseEntity<String>
     {
-        return apiClient.downloadSpectrum(id)
+        return apiClient.downloadOutput(type, id)
     }
 
-    @GetMapping("/coarse-output/{id}")
+    @GetMapping("/status/{id}")
     @ResponseBody
-    fun getCoarseOutput(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
+    fun getDownloadOutputStatus(@PathVariable("id") id: String): ResponseEntity<String>
     {
-        return apiClient.downloadCoarseOutput(id)
+        return apiClient.downloadOutputStatus(id)
     }
 
-    @GetMapping("/summary/{id}")
+    @GetMapping("/result/{id}")
     @ResponseBody
-    fun getSummary(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
+    fun getDownloadOutputResult(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
     {
-        return apiClient.downloadSummary(id)
+        return apiClient.downloadOutputResult(id)
     }
 }

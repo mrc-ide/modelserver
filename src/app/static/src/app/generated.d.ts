@@ -4,6 +4,10 @@
   * Instead, modify the hintr JSON schema files
   * and run ./generate-types.sh to regenerate this file.
 */
+export interface AdrMetadataResponse {
+  type: "spectrum" | "coarse_output" | "summary";
+  description: string | null;
+}
 export interface AncDataRow {
   area_id: string;
   age_group: string;
@@ -96,6 +100,82 @@ export interface BarchartMetadata {
     };
   };
 }
+export type CalibratePlotData = {
+  data_type: "spectrum" | "calibrated" | "unadjusted";
+  spectrum_region_code: string;
+  spectrum_region_name: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator: string;
+  mean: number | null;
+  lower: number | null;
+  upper: number | null;
+  [k: string]: any;
+}[];
+export interface CalibratePlotResponse {
+  data: {
+    data_type: "spectrum" | "calibrated" | "unadjusted";
+    spectrum_region_code: string;
+    spectrum_region_name: string;
+    sex: string;
+    age_group: string;
+    calendar_quarter: string;
+    indicator: string;
+    mean: number | null;
+    lower: number | null;
+    upper: number | null;
+    [k: string]: any;
+  }[];
+  plottingMetadata: {
+    barchart: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        indicator_column: string;
+        indicator_value: string;
+        indicator_sort_order?: number;
+        name: string;
+        error_low_column: string;
+        error_high_column: string;
+        scale: number;
+        accuracy: number | null;
+        format: string;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+      defaults?: {
+        indicator_id: string;
+        x_axis_id: string;
+        disaggregate_by_id: string;
+        selected_filter_options: {
+          [k: string]: any;
+        };
+      };
+    };
+  };
+}
+export interface CalibratePlotRow {
+  data_type: "spectrum" | "calibrated" | "unadjusted";
+  spectrum_region_code: string;
+  spectrum_region_name: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator: string;
+  mean: number | null;
+  lower: number | null;
+  upper: number | null;
+  [k: string]: any;
+}
 export interface CalibrateResultResponse {
   data: {
     area_id: string;
@@ -171,14 +251,6 @@ export interface CalibrateResultResponse {
         }[];
         use_shape_regions?: boolean | null;
       }[];
-    };
-  };
-  uploadMetadata?: {
-    outputZip: {
-      description?: string;
-    };
-    outputSummary: {
-      description?: string;
     };
   };
   [k: string]: any;
@@ -258,6 +330,25 @@ export interface ChoroplethMetadata {
     }[];
     use_shape_regions?: boolean | null;
   }[];
+}
+export interface DownloadStatusResponse {
+  id: string;
+  done: boolean | null;
+  status: string;
+  success: boolean | null;
+  queue: number;
+  progress: (
+    | {
+        started: boolean;
+        complete: boolean;
+        value?: number;
+        name: string;
+        helpText?: string;
+      }
+    | string)[];
+}
+export interface DownloadSubmitResponse {
+  id: string;
 }
 export interface Error {
   error: string;

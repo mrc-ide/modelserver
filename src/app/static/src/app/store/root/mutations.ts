@@ -15,6 +15,7 @@ import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
+import {initialDownloadResultsState} from "../downloadResults/downloadResults";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -49,7 +50,8 @@ export const mutations: MutationTree<RootState> = {
             load: initialLoadState(),
             errors: initialErrorsState(),
             projects: initialProjectsState(),
-            currentUser: state.currentUser
+            currentUser: state.currentUser,
+            downloadResults: initialDownloadResultsState()
         };
         Object.assign(state, resetState);
 
@@ -131,6 +133,7 @@ export const mutations: MutationTree<RootState> = {
             colourScales: colourScales
         });
         Object.assign(state.adrUpload, initialADRUploadState());
+        Object.assign(state.downloadResults, initialDownloadResultsState());
     },
 
     ...languageMutations

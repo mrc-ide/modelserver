@@ -54,7 +54,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
         val version = parser.treeToValue<Map<String, String>>(versionJson)
 
-        val modelRunOptions = ModelOptions(emptyMap(), version)
+        val modelRunOptions = ModelOptions(getMockModelOptions(), version)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
@@ -64,7 +64,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     protected fun getValidationOptions(): HttpEntity<String>
     {
         uploadMinimalFiles()
-        val modelRunOptions = ModelOptions(getMockOptions(), emptyMap())
+        val modelRunOptions = ModelOptions(getMockModelOptions(), emptyMap())
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -103,6 +103,36 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
 
         return id
+    }
+
+    protected fun waitForCalibrationResult(modelId: String): String {
+        val entity = getModelRunEntity()
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/calibrate/submit/$modelId", entity)
+        val id = ObjectMapper().readValue<JsonNode>(responseEntity.body!!)["data"]["id"].textValue()
+
+        do
+        {
+            Thread.sleep(500)
+            val statusResponse = testRestTemplate.getForEntity<String>("/model/calibrate/status/$id")
+        } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
+
+        return id
+    }
+
+    protected fun waitForDownloadOutputResult(calibrateId: String, type: String): String
+    {
+        val response = testRestTemplate.getForEntity<String>("/download/submit/$type/$calibrateId")
+        assertSuccess(response, "DownloadSubmitResponse")
+        val bodyJSON = ObjectMapper().readTree(response.body)
+        val responseId = bodyJSON["data"]["id"].asText()
+
+        do
+        {
+            Thread.sleep(500)
+            val statusResponse = testRestTemplate.getForEntity<String>("/download/status/$responseId")
+        } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
+
+        return responseId
     }
 
     fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
@@ -269,41 +299,17 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         return ObjectMapper().readTree(entity.body)["data"]
     }
 
-    fun getMockOptions(): Map<String, Any>
+    fun getMockModelOptions(): Map<String, Any>
     {
-        return mapOf("anc_art_coverage_year1" to "2018",
-                "anc_prevalence_year1" to "2018",
-                "anc_prevalence_year2" to "2018",
-                "area_level" to "4", "area_scope" to "MWI",
-                "artattend" to "false",
-                "artattend_log_gamma_offset" to -4,
-                "artattend_t2" to "true",
-                "calendar_quarter_t1" to "CY2018Q3",
-                "calendar_quarter_t2" to "CY2019Q4",
-                "calendar_quarter_t3" to "CY2020Q3",
-                "deff_artcov" to 1,
-                "deff_prev" to 1,
-                "deff_recent" to 1,
-                "include_art_t1" to "false",
-                "include_art_t2" to "false",
-                "max_iterations" to 250,
-                "no_of_samples" to 1000,
-                "permissive" to "false",
-                "rng_seed" to 28,
+        return mapOf(
+                "spectrum_plhiv_calibration_level" to "national",
+                "spectrum_plhiv_calibration_strat" to "sex_age_group",
                 "spectrum_artnum_calibration_level" to "national",
                 "spectrum_artnum_calibration_strat" to "sex_age_coarse",
                 "spectrum_infections_calibration_level" to "national",
                 "spectrum_infections_calibration_strat" to "sex_age_coarse",
-                "spectrum_plhiv_calibration_level" to "national",
-                "spectrum_plhiv_calibration_strat" to "sex_age_coarse",
-                "spectrum_population_calibration" to "national",
-                "spectrum_aware_calibration_level" to "none",
-                "spectrum_aware_calibration_strat" to "age_coarse",
-                "survey_art_coverage" to { "MWI2016PHIA" },
-                "survey_prevalence" to { "MWI2016PHIA" },
-                "survey_recently_infected" to { "MWI2016PHIA" },
-                "output_aware_plhiv" to "true",
-                "anc_clients_year2" to 2018,
-                "anc_clients_year2_num_months" to "9")
+                "spectrum_aware_calibration_level" to "national",
+                "spectrum_aware_calibration_strat" to "sex_age_coarse",
+                "calibrate_method" to "logistic")
     }
 }

@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {FilterOption, Error} from "./generated";
+import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse} from "./generated";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
@@ -153,4 +153,23 @@ export interface UploadFile {
     resourceId: string | null,
     resourceUrl: string | null,
     lastModified: string | null
+}
+
+export interface DownloadResultsDependency {
+    downloadId: string
+    downloading: boolean
+    statusPollId: number
+    status: DownloadStatusResponse
+    complete: boolean
+    error: Error | null
+}
+
+export interface PoolingStarted {
+    pollId: number,
+    downloadType: string
+}
+export interface SelectedADRUploadFiles {
+    summary: any,
+    spectrum: any,
+    coarseOutput?: any
 }

@@ -33,6 +33,11 @@ import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
 import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
+import {
+    downloadResults,
+    DownloadResultsState,
+    initialDownloadResultsState
+} from "./store/downloadResults/downloadResults";
 
 export interface TranslatableState {
     language: Language
@@ -55,7 +60,8 @@ export interface RootState extends TranslatableState {
     load: LoadState,
     errors: ErrorsState,
     projects: ProjectsState
-    currentUser: string
+    currentUser: string,
+    downloadResults: DownloadResultsState
 }
 
 export interface ReadyState {
@@ -130,7 +136,8 @@ export const emptyState = (): RootState => {
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState(),
         projects: initialProjectsState(),
-        currentUser: currentUser
+        currentUser: currentUser,
+        downloadResults: initialDownloadResultsState()
     }
 };
 
@@ -151,7 +158,8 @@ export const storeOptions: StoreOptions<RootState> = {
         load,
         errors,
         projects,
-        hintrVersion
+        hintrVersion,
+        downloadResults
     },
     actions: actions,
     mutations: mutations,

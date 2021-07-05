@@ -27,8 +27,6 @@ interface HintrAPIClient
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
-    fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
-    fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getModelCalibrationOptions(): ResponseEntity<String>
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
@@ -37,10 +35,13 @@ interface HintrAPIClient
     fun getCalibratePlot(id: String): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
     fun getVersion(): ResponseEntity<String>
-    fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
+    fun downloadOutput(type:String, id: String): ResponseEntity<String>
+    fun downloadOutputStatus(id: String): ResponseEntity<String>
+    fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
+    fun getUploadMetadata(id: String): ResponseEntity<String>
 }
 
 @Component
@@ -180,26 +181,26 @@ class HintrFuelAPIClient(
         return get("hintr/version")
     }
 
-    override fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
+    override fun downloadOutput(type:String, id: String): ResponseEntity<String>
     {
-        return "$baseUrl/download/summary/${id}"
+        return get("download/submit/${type}/${id}")
+    }
+
+    override fun downloadOutputStatus(id: String): ResponseEntity<String>
+    {
+        return get("download/status/${id}")
+    }
+
+    override fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
+    {
+        return "$baseUrl/download/result/${id}"
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
     }
 
-    override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
+    override fun getUploadMetadata(id: String): ResponseEntity<String>
     {
-        return "$baseUrl/download/spectrum/${id}"
-                .httpDownload()
-                .getStreamingResponseEntity(::head)
+        return get("meta/adr/${id}")
     }
-
-    override fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody>
-    {
-        return "$baseUrl/download/coarse-output/${id}"
-                .httpDownload()
-                .getStreamingResponseEntity(::head)
-    }
-
 
 }

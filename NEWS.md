@@ -1,3 +1,7 @@
+# hint 1.44.0
+
+* Use async endpoints for Just-In-time generation of download files from HINT frontend
+
 # hint 1.43.0
 
 * Add note icon(s) and dialogs to project history for project/version

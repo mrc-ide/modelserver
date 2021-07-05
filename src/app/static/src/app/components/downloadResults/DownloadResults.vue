@@ -2,21 +2,43 @@
     <div class="container">
         <div class="row">
             <div class="col-sm">
+                <div id="spectrum-download">
                 <h4 v-translate="'exportOutputs'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
+                <span class="btn btn-red btn-lg my-3"
+                      @click="downloadSpectrum">
                     <span v-translate="'export'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
+                </span>
+                    <download-progress id="spectrum-progress"
+                                       :complete="spectrum.complete"
+                                       :downloading="spectrum.downloading">
+                    </download-progress>
+                    <error-alert id="spectrum-error" v-if="spectrum.error" :error="spectrum.error"></error-alert>
+                </div>
+                <div id="coarse-output-download">
                 <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=coarseOutputUrl>
+                <span class="btn btn-red btn-lg my-3" @click="downloadCoarseOutput">
                     <span v-translate="'download'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
+                </span>
+                    <download-progress id="coarse-output-progress"
+                                       :complete="coarseOutput.complete"
+                                       :downloading="coarseOutput.downloading">
+                    </download-progress>
+                    <error-alert id="coarse-output-error" v-if="coarseOutput.error" :error="coarseOutput.error"></error-alert>
+                </div>
+                <div id="summary-download">
                 <h4 class="mt-4" v-translate="'downloadSummaryReport'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=summaryReportUrl>
+                <span class="btn btn-red btn-lg my-3" @click="downloadSummary">
                     <span v-translate="'download'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
+                </span>
+                    <download-progress id="summary-progress"
+                                       :complete="summary.complete"
+                                       :downloading="summary.downloading">
+                    </download-progress>
+                    <error-alert id="summary-error" v-if="summary.error" :error="summary.error"></error-alert>
+                </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
@@ -52,7 +74,6 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
-    import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
@@ -63,12 +84,11 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
+    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import {DownloadResultsDependency} from "../../types";
+    import DownloadProgress from "./DownloadProgress.vue";
 
     interface Computed {
-        modelCalibrateId: string,
-        spectrumUrl: string,
-        coarseOutputUrl: string,
-        summaryReportUrl: string,
         uploadingStatus: string,
         currentLanguage: Language,
         currentFileUploading: number | null,
@@ -76,7 +96,11 @@
         uploading: boolean,
         uploadComplete: boolean,
         uploadError: null | UploadError,
-        hasUploadPermission: boolean
+        hasUploadPermission: boolean,
+        downloadingSpectrum: boolean,
+        spectrum: Partial<DownloadResultsDependency>,
+        coarseOutput: Partial<DownloadResultsDependency>,
+        summary: Partial<DownloadResultsDependency>
     }
 
     interface UploadError {
@@ -88,6 +112,12 @@
         handleUploadModal: () => void
         getUserCanUpload: () => void
         getUploadFiles: () => void
+        downloadCoarseOutput: () => void
+        downloadSpectrum: () => void
+        downloadSummary: () => void
+        getSummaryDownload: () => void
+        getSpectrumDownload: () => void
+        getCoarseOutputDownload: () => void
     }
 
     interface Data {
@@ -102,8 +132,22 @@
             }
         },
         computed: {
-            ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
-                modelCalibrateId: state => state.calibrateId
+            ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
+                spectrum: state => ({
+                    downloading: state.spectrum.downloading,
+                    complete: state.spectrum.complete,
+                    error: state.spectrum.error
+                }),
+                summary: state => ({
+                    downloading: state.summary.downloading,
+                    complete: state.summary.complete,
+                    error: state.summary.error
+                }),
+                coarseOutput: state => ({
+                    downloading: state.coarseOutput.downloading,
+                    complete: state.coarseOutput.complete,
+                    error: state.coarseOutput.error
+                })
             }),
             ...mapStateProps<ADRUploadState, keyof Computed>("adrUpload", {
                 currentFileUploading: state => state.currentFileUploading,
@@ -125,23 +169,32 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            ),
-            spectrumUrl: function () {
-                return `/download/spectrum/${this.modelCalibrateId}`
-            },
-            coarseOutputUrl: function () {
-                return `/download/coarse-output/${this.modelCalibrateId}`
-            },
-            summaryReportUrl: function () {
-                return `/download/summary/${this.modelCalibrateId}`
-            }
+            )
         },
         methods: {
             handleUploadModal() {
                 this.uploadModalOpen = true
             },
+            downloadSpectrum() {
+                if (!this.spectrum.downloading) {
+                    this.getSpectrumDownload()
+                }
+            },
+            downloadSummary() {
+                if (!this.summary.downloading) {
+                    this.getSummaryDownload()
+                }
+            },
+            downloadCoarseOutput() {
+                if (!this.coarseOutput.downloading) {
+                    this.getCoarseOutputDownload()
+                }
+            },
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
-            getUploadFiles: mapActionByName("adrUpload", "getUploadFiles")
+            getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
+            getSpectrumDownload: mapActionByName("downloadResults", "downloadSpectrum"),
+            getSummaryDownload: mapActionByName("downloadResults", "downloadSummary"),
+            getCoarseOutputDownload: mapActionByName("downloadResults", "downloadCoarseOutput")
         },
         mounted() {
             this.getUserCanUpload();
@@ -153,8 +206,8 @@
             LoadingSpinner,
             Tick,
             ErrorAlert,
-            UploadModal
+            UploadModal,
+            DownloadProgress
         }
     });
 </script>
-

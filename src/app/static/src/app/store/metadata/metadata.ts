@@ -2,19 +2,29 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {RootState} from "../../root";
-import {ChoroplethIndicatorMetadata, PlottingMetadataResponse, Error, Metadata} from "../../generated";
+import {
+    ChoroplethIndicatorMetadata,
+    PlottingMetadataResponse,
+    Error,
+    Metadata,
+    AdrMetadataResponse
+} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
 
 export interface MetadataState {
     plottingMetadataError: Error | null
     plottingMetadata: PlottingMetadataResponse | null
+    adrUploadMetadata: AdrMetadataResponse | null
+    adrUploadMetadataError: Error | null
 }
 
 export const initialMetadataState = (): MetadataState => {
     return {
         plottingMetadataError: null,
-        plottingMetadata: null
+        plottingMetadata: null,
+        adrUploadMetadataError: null,
+        adrUploadMetadata: null
     }
 };
 

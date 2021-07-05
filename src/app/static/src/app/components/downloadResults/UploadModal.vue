@@ -51,10 +51,18 @@
 <script lang="ts">
     import Vue from "vue";
     import Modal from "../Modal.vue";
-    import {Dict, UploadFile} from "../../types";
+    import {
+        Dict,
+        DownloadResultsDependency,
+        SelectedADRUploadFiles,
+        UploadFile
+    } from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
     import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
+    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import {adr, ADRState} from "../../store/adr/adr";
+    import DownloadProgress from "./DownloadProgress.vue";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
@@ -62,17 +70,30 @@
         handleCancel: () => void
         lastModified: (date: string) => string | null
         setDefaultCheckedItems: () => void
+        downloadSpectrum: (isAdrUpload: boolean) => void
+        downloadSummary: (isAdrUpload: boolean) => void
+        prepareFilesForUpload: (uploadFilesPayload: UploadFile[]) => boolean
+        findSelectedUploadFiles: (uploadFilesPayload: UploadFile[]) => SelectedADRUploadFiles
+        downloadIsReady: () => boolean
+        getSummaryDownload: () => void
+        getSpectrumDownload: () => void
+        sendUploadFilesToADR: () => void
     }
 
     interface Computed {
         dataset: string
         uploadFiles: Dict<UploadFile>,
-        uploadFileSections: Array<Dict<UploadFile>>
+        uploadFileSections: Array<Dict<UploadFile>>,
+        spectrum: Partial<DownloadResultsDependency>,
+        summary: Partial<DownloadResultsDependency>,
+        outputSummary: string,
+        outputSpectrum: string
     }
 
     interface Data {
         uploadFilesToAdr: string[]
         uploadDescToAdr: string
+        uploadFilesPayload: UploadFile[]
     }
 
     interface Props {
@@ -91,7 +112,8 @@
         data(): Data {
             return {
                 uploadFilesToAdr: [],
-                uploadDescToAdr: ""
+                uploadDescToAdr: "",
+                uploadFilesPayload: []
             }
         },
         methods: {
@@ -100,10 +122,54 @@
                 "uploadFilesToADR"
             ),
             confirmUpload() {
-                const uploadFilesPayload: UploadFile[] = []
-                this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
-                this.uploadFilesToADRAction(uploadFilesPayload);
+                this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]))
+                const readyForUpload = this.prepareFilesForUpload(this.uploadFilesPayload)
+                if (readyForUpload) {
+                    this.sendUploadFilesToADR()
+                }
+            },
+            sendUploadFilesToADR() {
+                this.uploadFilesToADRAction(this.uploadFilesPayload);
                 this.$emit("close")
+            },
+            prepareFilesForUpload() {
+                const {summary, spectrum} = this.findSelectedUploadFiles(this.uploadFilesPayload)
+                if (summary) {
+                    this.getSummaryDownload()
+                }
+                if (spectrum) {
+                    this.getSpectrumDownload()
+                }
+
+                return this.downloadIsReady()
+            },
+            findSelectedUploadFiles() {
+                const summary = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSummary)
+                const spectrum = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSpectrum)
+
+                return {summary, spectrum}
+            },
+            downloadIsReady() {
+                const {summary, spectrum} = this.findSelectedUploadFiles(this.uploadFilesPayload)
+                if (summary && spectrum) {
+                    return !!this.summary.complete && !!this.spectrum.complete
+                } else {
+                    if (summary && !spectrum) {
+                        return !!this.summary.complete
+                    } else {
+                        return !!this.spectrum.complete
+                    }
+                }
+            },
+            getSummaryDownload() {
+                if (!this.summary.downloading && !this.summary.complete) {
+                    this.downloadSummary(true)
+                }
+            },
+            getSpectrumDownload() {
+                if (!this.spectrum.downloading && !this.spectrum.complete) {
+                    this.downloadSpectrum(true)
+                }
             },
             handleCancel() {
                 this.$emit("close")
@@ -114,9 +180,25 @@
             setDefaultCheckedItems: function () {
                 this.uploadFilesToAdr = outputFileTypes
                     .filter(key => this.uploadFiles.hasOwnProperty(key))
-            }
+            },
+            downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),
+            downloadSummary: mapActionByName("downloadResults", "downloadSummary")
         },
         computed: {
+            ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
+                spectrum: state => ({
+                    downloading: state.spectrum.downloading,
+                    complete: state.spectrum.complete,
+                }),
+                summary: state => ({
+                    downloading: state.summary.downloading,
+                    complete: state.summary.complete,
+                })
+            }),
+            ...mapStateProps<ADRState, keyof Computed>("adr", {
+                outputSpectrum: state => state.schemas?.outputZip,
+                outputSummary: state => state.schemas?.outputSummary
+            }),
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
@@ -139,11 +221,22 @@
             }
         },
         components: {
-            Modal
+            Modal,
+            DownloadProgress
         },
         watch: {
             uploadFiles() {
                 this.setDefaultCheckedItems()
+            },
+            summary() {
+                if(this.downloadIsReady()) {
+                    this.sendUploadFilesToADR()
+                }
+            },
+            spectrum() {
+                if(this.downloadIsReady()) {
+                    this.sendUploadFilesToADR()
+                }
             }
         }
     });

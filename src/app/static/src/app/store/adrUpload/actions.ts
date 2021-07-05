@@ -88,9 +88,9 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
 
     async uploadFilesToADR(context, uploadFilesPayload) {
         const {rootState, commit, dispatch} = context;
-        const uploadMetadata = rootState.modelRun.result?.uploadMetadata
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
+        const uploadMetadata = rootState.metadata.adrUploadMetadata
 
         commit({type: ADRUploadMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
 
@@ -102,14 +102,14 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             if (resourceId) {
                 requestParams["resourceId"] = resourceId
             }
-            if (resourceType === rootState.adr.schemas?.outputSummary) {
-                requestParams["description"] = uploadMetadata
-                    ? uploadMetadata.outputSummary.description
+            if (resourceType === rootState.adr.schemas?.outputSummary && uploadMetadata?.type === "summary") {
+                requestParams["description"] = uploadMetadata?.description
+                    ? uploadMetadata.description
                     : "Naomi summary report uploaded from Naomi web app"
             }
-            if (resourceType === rootState.adr.schemas?.outputZip) {
-                requestParams["description"] = uploadMetadata
-                    ? uploadMetadata.outputZip.description
+            if (resourceType === rootState.adr.schemas?.outputZip && uploadMetadata?.type === "spectrum") {
+                requestParams["description"] = uploadMetadata?.description
+                    ? uploadMetadata.description
                     : "Naomi output uploaded from Naomi web app"
             }
 
