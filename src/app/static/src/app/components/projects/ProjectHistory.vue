@@ -184,6 +184,15 @@
                    v-translate:placeholder="'projectName'"
                    @keyup.enter="confirmRename(renamedProjectName)"
                    v-model="renamedProjectName">
+            <div class="form-group pt-3">
+                <label class="h5" for="version-note-rename">
+                    <span v-translate="'renameNoteHeader'"></span>
+                </label>
+                <textarea class="form-control"
+                          id="version-note-rename"
+                          placeholder="Notes"
+                          v-model="renameProjectNote" rows="4"></textarea>
+            </div>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -260,6 +269,7 @@
         versionNoteToEdit: VersionIds | null;
         editedNote: string;
         displayProjectName: string;
+        renameProjectNote: string;
         projectNoteToEdit: number | null;
         editedProjectNote: string;
     }
@@ -323,6 +333,7 @@
                 editedNote: "",
                 versionNote: "",
                 displayProjectName: "",
+                renameProjectNote: "",
                 renamedProjectName: "",
                 editedProjectNote: "",
                 projectNoteToEdit: null
@@ -394,6 +405,7 @@
                 this.projects.filter(project => {
                     if (project.id === projectId) {
                         this.renamedProjectName = project.name
+                        this.renameProjectNote = project.note || ""
                     }
                 })
                 this.projectToRename = projectId;
@@ -406,7 +418,8 @@
                 if (this.projectToRename) {
                     const projectPayload: projectPayload = {
                         projectId: this.projectToRename!,
-                        name: this.renamedProjectName
+                        name: this.renamedProjectName,
+                        note: this.renameProjectNote
                     };
                     this.renameProjectAction(projectPayload);
                     this.projectToRename = null;

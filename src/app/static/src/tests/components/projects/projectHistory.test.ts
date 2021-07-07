@@ -349,6 +349,9 @@ describe("Project history component", () => {
         expectTranslated(modal.find(".modal-body h4"), "Please enter a new name for the project",
             "Veuillez entrer un nouveau nom pour le projet", store);
 
+        expectTranslated(modal.find(".modal-body label"), "Notes: (your reason for renaming the project)",
+            "Remarques : (la raison pour laquelle vous avez renommé le projet)", store);
+
         const input = modal.find("input")
         expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
         const buttons = modal.find(".modal-footer").findAll("button");
@@ -689,8 +692,10 @@ describe("Project history component", () => {
 
         const modal = wrapper.findAll(".modal").at(2);
         const input = modal.find("input");
+        const textarea = modal.find("textarea");
         const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
         input.setValue("renamedProject");
+        textarea.setValue("renamed for no reason")
         expect(renameBtn.attributes("disabled")).toBe(undefined);
         expect(vm.projectToRename).toBe(1);
         expect(vm.renamedProjectName).toBe("renamedProject");
@@ -702,6 +707,7 @@ describe("Project history component", () => {
         expect(mockRenameProject.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "renamedProject",
+                "note": "renamed for no reason",
                 "projectId": 1
             });
         expect(vm.projectToRename).toBe(null);
@@ -744,6 +750,7 @@ describe("Project history component", () => {
             expect(mockRenameProject.mock.calls[0][1]).toStrictEqual(
                 {
                     "name": "renamedProject",
+                    "note": "project notes",
                     "projectId": 1
                 });
             expect(vm.projectToRename).toBe(null);

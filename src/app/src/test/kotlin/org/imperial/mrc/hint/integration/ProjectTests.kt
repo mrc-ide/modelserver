@@ -469,6 +469,7 @@ class ProjectTests : VersionFileTests()
 
             val map = LinkedMultiValueMap<String, String>()
             map.add("name", "renamedProject")
+            map.add("note", "new project notes")
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
             val httpEntity = HttpEntity(map, headers)
@@ -479,6 +480,7 @@ class ProjectTests : VersionFileTests()
             data = getResponseData(result) as ArrayNode
             assertThat(data.count()).isEqualTo(1)
             assertThat(data[0]["name"].asText()).isEqualTo("renamedProject")
+            assertThat(data[0]["note"].asText()).isEqualTo("new project notes")
         }
     }
 

@@ -231,6 +231,25 @@ class ProjectRepositoryTests
         val versionId1 = "testVersion"
         versionRepo.saveVersion(versionId1, projectId)
 
+        sut.renameProject(projectId, uid, "renamedProject", "project notes")
+
+        val renamedProject = dsl.selectFrom(PROJECT)
+                .where(PROJECT.ID.eq(projectId))
+                .and(PROJECT.USER_ID.eq(uid))
+                .fetchOne()
+        assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
+        assertThat(renamedProject[PROJECT.NOTE]).isEqualTo("project notes")
+    }
+
+    @Test
+    fun `can rename project with empty note`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        val versionId1 = "testVersion"
+        versionRepo.saveVersion(versionId1, projectId)
+
         sut.renameProject(projectId, uid, "renamedProject")
 
         val renamedProject = dsl.selectFrom(PROJECT)
@@ -238,6 +257,7 @@ class ProjectRepositoryTests
                 .and(PROJECT.USER_ID.eq(uid))
                 .fetchOne()
         assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
+        assertThat(renamedProject[PROJECT.NOTE]).isEqualTo(null)
     }
 
     @Test

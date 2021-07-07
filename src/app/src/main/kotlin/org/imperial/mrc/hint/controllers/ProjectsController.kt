@@ -178,9 +178,10 @@ class ProjectsController(private val session: Session,
     @ResponseBody
     fun renameProject(
         @PathVariable("projectId") projectId: Int,
-        @RequestParam("name") name: String): ResponseEntity<String>
+        @RequestParam("name") name: String,
+        @RequestParam("note") note: String?): ResponseEntity<String>
     {
-        projectRepository.renameProject(projectId, userId(), name)
+        projectRepository.renameProject(projectId, userId(), name, note)
         return EmptySuccessResponse.asResponseEntity()
     }
 

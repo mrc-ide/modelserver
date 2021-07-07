@@ -382,9 +382,9 @@ class ProjectsControllerTests
             on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
         }
         val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
-        val result = sut.renameProject(1, "renamedProject")
+        val result = sut.renameProject(1, "renamedProject", "project notes")
 
-        verify(mockRepo).renameProject(1, "testUser", "renamedProject")
+        verify(mockRepo).renameProject(1, "testUser", "renamedProject", "project notes")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 

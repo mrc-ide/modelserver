@@ -1,3 +1,7 @@
+# hint 1.44.0
+
+* Modify Rename dialog modal and add notes text area
+
 # hint 1.43.1
 
 * Bug fix: Importing from adr after fitting model should prompt new version behaviour

@@ -16,7 +16,7 @@ interface ProjectRepository
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
     fun getProjectFromVersionId(versionId: String, userId: String): Project
-    fun renameProject(projectId: Int, userId: String, name: String)
+    fun renameProject(projectId: Int, userId: String, name: String, note: String? = null)
     fun updateProjectNote(projectId: Int, userId: String, note: String)
 }
 
@@ -109,14 +109,15 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 .execute()
     }
 
-    override fun renameProject(projectId: Int, userId: String, name: String)
+    override fun renameProject(projectId: Int, userId: String, name: String, note: String?)
     {
         checkProjectExists(projectId, userId)
         dsl.update(PROJECT)
-            .set(PROJECT.NAME, name)
-            .where(PROJECT.USER_ID.eq(userId))
-            .and(PROJECT.ID.eq(projectId))
-            .execute()
+                .set(PROJECT.NAME, name)
+                .set(PROJECT.NOTE, note)
+                .where(PROJECT.USER_ID.eq(userId))
+                .and(PROJECT.ID.eq(projectId))
+                .execute()
     }
 
     override fun updateProjectNote(projectId: Int, userId: String, note: String)
