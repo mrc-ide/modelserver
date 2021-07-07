@@ -21,7 +21,8 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
             1: rootGetters['baseline/complete'] && rootGetters['metadata/complete'],
             2: rootGetters['surveyAndProgram/complete'],
             3: rootGetters['modelOptions/complete'],
-            4: rootGetters['modelRun/complete'],
+            // 4: rootGetters['modelRun/complete'],
+            4: rootState.modelRun.complete,
             5: rootState.modelCalibrate.complete,
             6: rootState.modelCalibrate.complete,
             7: false

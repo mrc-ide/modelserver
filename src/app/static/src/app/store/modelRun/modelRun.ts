@@ -6,6 +6,7 @@ import {localStorageManager} from "../../localStorageManager";
 import {ModelResultResponse, ModelStatusResponse, Error, CalibrateResultResponse} from "../../generated";
 
 export interface ModelRunState extends ReadyState {
+    complete: boolean,
     modelRunId: string
     statusPollId: number,
     status: ModelStatusResponse
@@ -18,6 +19,7 @@ export const maxPollErrors = 150;
 
 export const initialModelRunState = (): ModelRunState => {
     return {
+        complete: false,
         modelRunId: "",
         errors: [],
         status: {} as ModelStatusResponse,
@@ -29,9 +31,9 @@ export const initialModelRunState = (): ModelRunState => {
 };
 
 export const modelRunGetters = {
-    complete: (state: ModelRunState) => {
-        return !!state.status.success && state.errors.length == 0 && !!state.result
-    },
+    // complete: (state: ModelRunState) => {
+    //     return !!state.status.success && state.errors.length == 0 && !!state.result
+    // },
     running: (state: ModelRunState) => {
         const started = !!state.status.id;
         const finished = state.status.done && (!state.status.success || !!state.result);

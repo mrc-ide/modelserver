@@ -25,11 +25,15 @@ export const mutations: MutationTree<ModelRunState> = {
         state.modelRunId = action.payload.id;
         state.status = {id: action.payload.id} as ModelStatusResponse;
         state.errors = [];
+        state.complete = false
     },
 
     [ModelRunMutation.RunStatusUpdated](state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {
         if (action.payload.done) {
             stopPolling(state);
+        }
+        if (action.payload.progress[0].complete){
+            state.complete = true
         }
         state.status = action.payload;
         state.errors = [];
