@@ -59,9 +59,45 @@ export const mutations: MutationTree<ModelOptionsState> = {
     },
 
     [ModelOptionsMutation.ModelOptionsFetched](state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {
+        console.log('old form pre?', state.optionsFormMeta.controlSections)
+        console.log('new form pre?', action.payload.controlSections)
         const newForm = {...updateForm(state.optionsFormMeta, action.payload)};
-        state.valid = state.valid && JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
+        // const valid = state.valid && JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
+        console.log('mathes?', state.valid, JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta.controlSections))
+
+        console.log('new form?', JSON.stringify(newForm).replace(/,\"value\":null/g, "").length)
+        console.log('old form?', JSON.stringify(state.optionsFormMeta).replace(/,\"value\":null/g, "").length)
+        console.log('new form? Post', newForm)
+        console.log('old form Post?', state.optionsFormMeta)
+        // console.log('new form?', JSON.stringify(newForm.controlSections[0]).length)
+        // console.log('old form?', JSON.stringify(state.optionsFormMeta.controlSections[0]).length)
+        // console.log('new form?', JSON.stringify(newForm.controlSections[1]).length)
+        // console.log('old form?', JSON.stringify(state.optionsFormMeta.controlSections[1]).length)
+        console.log('new form?', JSON.stringify(newForm.controlSections[2]))
+        console.log('old form?', JSON.stringify(state.optionsFormMeta.controlSections[2]))
+        console.log('new form?', JSON.stringify(newForm.controlSections[2]).length)
+        console.log('old form?', JSON.stringify(state.optionsFormMeta.controlSections[2]).length)
+        // console.log('new form?', JSON.stringify(newForm.controlSections[3]).length)
+        // console.log('old form?', JSON.stringify(state.optionsFormMeta.controlSections[3]).length)
+        // console.log('new form?', JSON.stringify(newForm.controlSections[4]).length)
+        // console.log('old form?', JSON.stringify(state.optionsFormMeta.controlSections[4]).length)
+        // console.log('new form?', JSON.stringify(newForm.controlSections[5]).length)
+        // console.log('old form?', JSON.stringify(state.optionsFormMeta.controlSections[5]).length)
+        // console.log('new form? Post', JSON.stringify(newForm).slice(0,500))
+        // console.log('old form Post?', JSON.stringify(state.optionsFormMeta).slice(0,500))
+        // console.log('new form? Post', JSON.stringify(newForm).slice(JSON.stringify(newForm).length - 500))
+        // console.log('old form Post?', JSON.stringify(state.optionsFormMeta).slice(JSON.stringify(state.optionsFormMeta).length - 500))
+        state.valid = state.valid && JSON.stringify(newForm).replace(/,\"value\":null/g, "") == JSON.stringify(state.optionsFormMeta).replace(/,\"value\":null/g, "");
+        // if (valid){
+        //     state.optionsFormMeta = newForm;
+        //     state.valid = true;
+        // } else {
+        //     state.optionsFormMeta = newForm;
+        //     state.valid = false;
+        // }
         state.optionsFormMeta = newForm;
+        // state.valid = state.valid && JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
+        // state.valid = valid
         state.fetching = false;
     },
 
